@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "difficulty": "easy",
+    "category": "Python Basics",
+    "question": "Which keyword is used to define a function in Python?",
+    "options": ["func", "define", "def", "function"],
+    "answer": 2,
+    "explanation": "'def' is the keyword used to define functions in Python."
+  },
+  {
+    "id": 2,
+    "difficulty": "easy",
+    "category": "Python Basics",
+    "question": "What is the output of: print(type(3.14))?",
+    "options": ["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'double'>"],
+    "answer": 1,
+    "explanation": "3.14 is a floating-point number, so its type is 'float'."
+  },
+  {
+    "id": 3,
+    "difficulty": "easy",
+    "category": "Data Types",
+    "question": "Which of the following is a mutable data type in Python?",
+    "options": ["tuple", "string", "list", "int"],
+    "answer": 2,
+    "explanation": "Lists are mutable — you can change, add, or remove elements after creation."
+  },
+  {
+    "id": 4,
+    "difficulty": "easy",
+    "category": "Operators",
+    "question": "What does the '%' operator do in Python?",
+    "options": ["Division", "Power", "Modulus (remainder)", "Floor division"],
+    "answer": 2,
+    "explanation": "The '%' operator returns the remainder of a division operation."
+  },
+  {
+    "id": 5,
+    "difficulty": "easy",
+    "category": "Control Flow",
+    "question": "Which loop is best when you know the number of iterations beforehand?",
+    "options": ["while loop", "do-while loop", "for loop", "repeat loop"],
+    "answer": 2,
+    "explanation": "A 'for' loop is ideal when the number of iterations is known in advance."
+  },
+  {
+    "id": 6,
+    "difficulty": "medium",
+    "category": "Functions",
+    "question": "What will this code output? \ndef greet(name='World'):\n    print('Hello', name)\ngreet()",
+    "options": ["Hello", "Hello World", "Error", "Hello name"],
+    "answer": 1,
+    "explanation": "'World' is the default value. If no argument is passed, 'World' is used."
+  },
+  {
+    "id": 7,
+    "difficulty": "medium",
+    "category": "Lists",
+    "question": "What is the output of: my_list = [1,2,3]; print(my_list[-1])?",
+    "options": ["1", "Error", "None", "3"],
+    "answer": 3,
+    "explanation": "Negative indexing starts from the end. my_list[-1] is the last element, which is 3."
+  },
+  {
+    "id": 8,
+    "difficulty": "medium",
+    "category": "Strings",
+    "question": "What does 'Hello World'.split() return?",
+    "options": ["('Hello', 'World')", "['Hello', 'World']", "'Hello''World'", "['Hello World']"],
+    "answer": 1,
+    "explanation": "split() returns a list of words. By default it splits on whitespace."
+  },
+  {
+    "id": 9,
+    "difficulty": "medium",
+    "category": "Dictionaries",
+    "question": "How do you access a value in a dictionary called 'd' with key 'name'?",
+    "options": ["d.name", "d->name", "d['name']", "d{name}"],
+    "answer": 2,
+    "explanation": "Dictionary values are accessed using square brackets with the key inside."
+  },
+  {
+    "id": 10,
+    "difficulty": "medium",
+    "category": "OOP",
+    "question": "What is the purpose of __init__ in a Python class?",
+    "options": ["To delete an object", "To initialize object attributes when created", "To define class methods", "To import modules"],
+    "answer": 1,
+    "explanation": "__init__ is the constructor method called automatically when a new object is created."
+  },
+  {
+    "id": 11,
+    "difficulty": "hard",
+    "category": "Advanced",
+    "question": "What is the output of: print([x**2 for x in range(3)])?",
+    "options": ["[1, 4, 9]", "[0, 1, 4]", "[0, 1, 2]", "[1, 2, 3]"],
+    "answer": 1,
+    "explanation": "range(3) gives 0,1,2. Squaring each: 0²=0, 1²=1, 2²=4. Result: [0, 1, 4]."
+  },
+  {
+    "id": 12,
+    "difficulty": "hard",
+    "category": "Advanced",
+    "question": "What does *args allow in a function?",
+    "options": ["Only keyword arguments", "A fixed number of arguments", "Variable number of positional arguments", "No arguments at all"],
+    "answer": 2,
+    "explanation": "*args lets a function accept any number of positional arguments as a tuple."
+  },
+  {
+    "id": 13,
+    "difficulty": "hard",
+    "category": "Advanced",
+    "question": "What is a lambda function?",
+    "options": ["A class method", "A loop shortcut", "An anonymous single-expression function", "A recursive function"],
+    "answer": 2,
+    "explanation": "Lambda functions are small anonymous functions defined with the 'lambda' keyword."
+  },
+  {
+    "id": 14,
+    "difficulty": "hard",
+    "category": "Advanced",
+    "question": "What will 'try-except' block do if no exception occurs?",
+    "options": ["Run the except block", "Skip the try block", "Run the try block only", "Raise an error"],
+    "answer": 2,
+    "explanation": "If no exception occurs, only the 'try' block executes; the 'except' block is skipped."
+  },
+  {
+    "id": 15,
+    "difficulty": "hard",
+    "category": "Advanced",
+    "question": "Which of these creates a generator in Python?",
+    "options": ["Using [] brackets", "Using () with a function call", "Using 'yield' in a function", "Using 'return' twice"],
+    "answer": 2,
+    "explanation": "A function with 'yield' becomes a generator function that returns a generator object."
+  }
+]

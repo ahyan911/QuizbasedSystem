@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyQuiz — Python Quiz System</title>
+
+  <!-- Our stylesheet (style.css) handles all visual design -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- =============================================
+  APP WRAPPER — everything lives inside here
+  The JS will show/hide each "screen" as needed
+  ============================================= -->
+<div id="app">
+
+  <!-- ── HEADER (always visible) ── -->
+  <header class="app-header">
+    <div class="app-logo">▸ Interactive Learning</div>
+    <h1 class="app-title">Py<span>Quiz</span></h1>
+    <p class="app-subtitle">Test your Python knowledge · Track your progress</p>
+  </header>
+
+  <!-- =============================================
+    SCREEN 1: MAIN MENU
+    The home screen shown when the app loads.
+    ============================================= -->
+  <section id="screen-menu" class="screen active">
+
+    <!-- Last score summary (shown if user has played before) -->
+    <div id="last-score-banner" class="card" style="display:none;">
+      <p class="card-title">Last Session</p>
+      <div id="last-score-content"></div>
+    </div>
+
+    <!-- Menu options -->
+    <div class="menu-grid">
+
+      <!-- Option 1: Start Quiz -->
+      <button class="menu-item" onclick="App.showScreen('screen-setup')">
+        <div class="menu-icon">🚀</div>
+        <div class="menu-text">
+          <h3>Start Quiz</h3>
+          <p>Choose difficulty and begin a new quiz</p>
+        </div>
+      </button>
+
+      <!-- Option 2: View Score History -->
+      <button class="menu-item" onclick="App.showScreen('screen-history')">
+        <div class="menu-icon">📊</div>
+        <div class="menu-text">
+          <h3>Score History</h3>
+          <p>Review all your past scores</p>
+        </div>
+      </button>
+
+      <!-- Option 3: Performance Analysis -->
+      <button class="menu-item" id="menu-analysis-btn" onclick="App.showScreen('screen-analysis')">
+        <div class="menu-icon">📈</div>
+        <div class="menu-text">
+          <h3>Performance Analysis</h3>
+          <p>Detailed breakdown of your progress</p>
+        </div>
+      </button>
+
+      <!-- Option 4: Exit (clears data) -->
+      <button class="menu-item" onclick="App.exitApp()">
+        <div class="menu-icon">🚪</div>
+        <div class="menu-text">
+          <h3>Exit &amp; Reset</h3>
+          <p>Clear all data and start fresh</p>
+        </div>
+      </button>
+
+    </div>
+  </section>
+  <!-- end: screen-menu -->
+
+
+  <!-- =============================================
+    SCREEN 2: QUIZ SETUP
+    Player enters name, picks difficulty & options
+    ============================================= -->
+  <section id="screen-setup" class="screen">
+
+    <div class="card">
+      <p class="card-title">New Quiz Setup</p>
+
+      <!-- Player Name Input -->
+      <label class="input-label" for="player-name">Your Name</label>
+      <input
+        type="text"
+        id="player-name"
+        class="input-field"
+        placeholder="Enter your name..."
+        maxlength="30"
+      />
+      <!-- Error shown if name is blank -->
+      <div id="name-error" class="error-msg">⚠️ Please enter your name to continue.</div>
+
+      <div class="divider"></div>
+
+      <!-- Difficulty Selection -->
+      <p class="input-label">Difficulty Level</p>
+      <div class="difficulty-grid">
+
+        <button class="diff-btn easy selected" data-diff="easy" onclick="App.selectDifficulty('easy')">
+          <div class="diff-icon">🌱</div>
+          <div class="diff-label">Easy</div>
+          <div class="diff-desc">5 questions</div>
+        </button>
+
+        <button class="diff-btn medium" data-diff="medium" onclick="App.selectDifficulty('medium')">
+          <div class="diff-icon">⚡</div>
+          <div class="diff-label">Medium</div>
+          <div class="diff-desc">5 questions</div>
+        </button>
+
+        <button class="diff-btn hard" data-diff="hard" onclick="App.selectDifficulty('hard')">
+          <div class="diff-icon">🔥</div>
+          <div class="diff-label">Hard</div>
+          <div class="diff-desc">5 questions</div>
+        </button>
+
+        <button class="diff-btn mixed" data-diff="mixed" onclick="App.selectDifficulty('mixed')" style="grid-column: 1/-1;">
+          <div class="diff-icon">🎲</div>
+          <div class="diff-label">Mixed (All Levels)</div>
+          <div class="diff-desc">Random 10 questions</div>
+        </button>
+
+      </div>
+
+      <!-- Negative Marking Toggle -->
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <h4>⚠️ Negative Marking</h4>
+          <p>Deduct 0.25 marks for each wrong answer</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="negative-marking" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group mt-20">
+        <button class="btn btn-secondary" onclick="App.showScreen('screen-menu')">← Back</button>
+        <button class="btn btn-primary" onclick="App.startQuiz()">Start Quiz 🚀</button>
+      </div>
+    </div>
+
+  </section>
+  <!-- end: screen-setup -->
+
+
+  <!-- =============================================
+    SCREEN 3: ACTIVE QUIZ
+    The actual question/answer interface
+    ============================================= -->
+  <section id="screen-quiz" class="screen">
+
+    <!-- Top info bar: Question count + Timer + Score -->
+    <div class="quiz-topbar">
+      <div class="quiz-progress-text">
+        Question <span id="q-current">1</span> of <span id="q-total">10</span>
+      </div>
+      <div id="timer" class="timer-display">30</div>
+      <div class="score-display">
+        Score: <span id="live-score">0</span>
+      </div>
+    </div>
+
+    <!-- Progress bar (fills as questions are answered) -->
+    <div class="progress-bar-wrap">
+      <div id="progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="card">
+
+      <!-- Difficulty badge for current question -->
+      <div id="q-difficulty-badge" class="difficulty-badge badge-easy">Easy</div>
+
+      <!-- Question text -->
+      <p id="question-text" class="question-text">Loading question...</p>
+
+      <!-- Answer options — buttons A, B, C, D -->
+      <div id="options-container" class="options-grid">
+        <!-- Filled dynamically by JS -->
+      </div>
+
+      <!-- Feedback shown after answering -->
+      <div id="feedback-box" class="feedback-box"></div>
+
+      <!-- Next Question button (hidden until user answers) -->
+      <button
+        id="next-btn"
+        class="btn btn-primary"
+        onclick="App.nextQuestion()"
+        style="display:none;"
+      >
+        Next Question →
+      </button>
+
+    </div>
+
+  </section>
+  <!-- end: screen-quiz -->
+
+
+  <!-- =============================================
+    SCREEN 4: RESULTS
+    Shows score and performance after quiz ends
+    ============================================= -->
+  <section id="screen-results" class="screen">
+
+    <div class="card">
+      <!-- Dynamic header (emoji + title changes with performance) -->
+      <div class="results-header">
+        <div id="results-emoji" class="results-emoji">🎉</div>
+        <h2 id="results-title" class="results-title">Quiz Complete!</h2>
+        <p id="results-subtitle" class="results-subtitle">Here's how you did</p>
+      </div>
+
+      <!-- Big score circle -->
+      <div class="score-circle-wrap">
+        <div class="score-circle">
+          <div id="final-score-num" class="score-num">0</div>
+          <div id="final-score-total" class="score-total">out of 10</div>
+        </div>
+      </div>
+
+      <!-- Stats: Correct / Wrong / Skipped -->
+      <div class="stats-row">
+        <div class="stat-box correct">
+          <div id="stat-correct" class="stat-val">0</div>
+          <div class="stat-lbl">Correct</div>
+        </div>
+        <div class="stat-box wrong">
+          <div id="stat-wrong" class="stat-val">0</div>
+          <div class="stat-lbl">Wrong</div>
+        </div>
+        <div class="stat-box skipped">
+          <div id="stat-skipped" class="stat-val">0</div>
+          <div class="stat-lbl">Skipped</div>
+        </div>
+      </div>
+
+      <!-- Performance Rank + Personalized Feedback -->
+      <div class="card" style="background: var(--bg-dark);">
+        <div class="rank-display">
+          <div id="rank-badge" class="rank-badge rank-beginner">Beginner</div>
+          <p id="rank-feedback" class="rank-feedback">Keep practicing!</p>
+        </div>
+      </div>
+
+      <!-- Negative marking penalty info (shown if enabled) -->
+      <div id="penalty-info" style="display:none;" class="text-muted text-center mt-8">
+        ⚠️ Includes <span id="penalty-amount" style="color:var(--danger);">-0</span> penalty for wrong answers
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group mt-20">
+        <button class="btn btn-secondary" onclick="App.showScreen('screen-menu')">🏠 Menu</button>
+        <button class="btn btn-primary" onclick="App.showScreen('screen-setup')">🔄 Play Again</button>
+      </div>
+    </div>
+
+  </section>
+  <!-- end: screen-results -->
+
+
+  <!-- =============================================
+    SCREEN 5: SCORE HISTORY
+    Lists all past quiz attempts
+    ============================================= -->
+  <section id="screen-history" class="screen">
+
+    <div class="card">
+      <p class="card-title">Score History</p>
+      <!-- Filled dynamically by JS -->
+      <div id="history-list-container"></div>
+    </div>
+
+    <button class="btn btn-secondary mt-12" onclick="App.showScreen('screen-menu')">← Back to Menu</button>
+
+  </section>
+  <!-- end: screen-history -->
+
+
+  <!-- =============================================
+    SCREEN 6: PERFORMANCE ANALYSIS
+    Shows detailed stats across all attempts
+    ============================================= -->
+  <section id="screen-analysis" class="screen">
+
+    <div class="card">
+      <p class="card-title">Performance Analysis</p>
+
+      <!-- Summary stats -->
+      <div id="analysis-content">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+    <button class="btn btn-secondary mt-12" onclick="App.showScreen('screen-menu')">← Back to Menu</button>
+
+  </section>
+  <!-- end: screen-analysis -->
+
+</div>
+<!-- end: #app -->
+
+<!-- Our core logic file loads last so all HTML is ready -->
+<script src="app.js"></script>
+
+</body>
+</html>
