@@ -1,6 +1,5 @@
 /* ==============================================
    app.js — PyQuiz browser logic
-   Drives all onclick="App..." handlers in index.html
    ============================================== */
 
 const App = (() => {
@@ -51,9 +50,7 @@ const App = (() => {
   const saveHistory = () => {
     try {
       localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
-    } catch (_) {
-      /* storage may be disabled — fail silently */
-    }
+    } catch (_) { /* storage may be disabled */ }
   };
 
   /* ---------- SCREEN ROUTING ---------- */
@@ -62,7 +59,6 @@ const App = (() => {
     const target = $(id);
     if (target) target.classList.add("active");
 
-    // Always stop any running timer when leaving the quiz screen
     if (id !== "screen-quiz") stopTimer();
 
     if (id === "screen-menu") renderLastScore();
@@ -126,7 +122,6 @@ const App = (() => {
     state.playerName = name;
     state.negativeMarking = !!$("negative-marking")?.checked;
 
-    // Pick question pool
     let pool;
     if (state.difficulty === "mixed") {
       pool = shuffle(state.allQuestions).slice(0, 10);
@@ -156,33 +151,28 @@ const App = (() => {
     const q = state.activeQuestions[state.currentIndex];
     state.answered = false;
 
-    // Top bar
     $("q-current").textContent = state.currentIndex + 1;
     $("live-score").textContent = state.score.toFixed(2).replace(/\.00$/, "");
     $("progress-fill").style.width =
       `${(state.currentIndex / state.activeQuestions.length) * 100}%`;
 
-    // Difficulty badge
     const badge = $("q-difficulty-badge");
     badge.className = `difficulty-badge badge-${q.difficulty}`;
     badge.textContent = `${cap(q.difficulty)} · ${q.category}`;
 
-    // Question text (preserve line breaks from JSON)
     $("question-text").textContent = q.question;
 
-    // Options
     const container = $("options-container");
     container.innerHTML = "";
     q.options.forEach((opt, i) => {
       const btn = document.createElement("button");
       btn.className = "option-btn";
-      btn.innerHTML = `<span class="option-label">${OPTION_LABELS[i]}</span><span class="option-text"></span>`;
-      btn.querySelector(".option-text").textContent = opt;
+      btn.innerHTML = `<span class="option-label">${OPTION_LABELS[i]}</span><span></span>`;
+      btn.querySelector("span:last-child").textContent = opt;
       btn.addEventListener("click", () => submitAnswer(i));
       container.appendChild(btn);
     });
 
-    // Reset feedback + next button
     const fb = $("feedback-box");
     fb.className = "feedback-box";
     fb.innerHTML = "";
@@ -194,13 +184,14 @@ const App = (() => {
   function startTimer() {
     stopTimer();
     state.timeLeft = QUESTION_TIME;
-    $("timer").textContent = state.timeLeft;
-    $("timer").style.color = "";
+    const timerEl = $("timer");
+    timerEl.textContent = state.timeLeft;
+    timerEl.classList.remove("urgent");
 
     state.timerId = setInterval(() => {
       state.timeLeft--;
-      $("timer").textContent = state.timeLeft;
-      if (state.timeLeft <= 5) $("timer").style.color = "var(--danger)";
+      timerEl.textContent = state.timeLeft;
+      if (state.timeLeft <= 5) timerEl.classList.add("urgent");
       if (state.timeLeft <= 0) {
         stopTimer();
         handleTimeout();
@@ -213,6 +204,8 @@ const App = (() => {
       clearInterval(state.timerId);
       state.timerId = null;
     }
+    const timerEl = $("timer");
+    if (timerEl) timerEl.classList.remove("urgent");
   }
 
   function submitAnswer(selectedIdx) {
@@ -327,7 +320,6 @@ const App = (() => {
       penInfo.style.display = "none";
     }
 
-    // Save result
     const result = {
       name: state.playerName,
       score: state.score,
@@ -353,28 +345,24 @@ const App = (() => {
     const wrap = $("history-list-container");
     if (!wrap) return;
     if (!state.history.length) {
-      wrap.innerHTML = `<p class="text-muted text-center mt-8">📋 No quiz attempts yet. Play your first quiz to see history here!</p>`;
+      wrap.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No quiz attempts yet. Play your first quiz to see history here!</p>
+        </div>`;
       return;
     }
-    const rows = state.history
-      .slice()
-      .reverse()
-      .map((r, i) => `
-        <div class="history-row">
+    wrap.innerHTML = `<div class="history-list">${
+      state.history.slice().reverse().map((r) => `
+        <div class="history-item">
           <div>
-            <strong>${escapeHtml(r.name)}</strong>
-            <span class="text-muted" style="font-size:12px;"> · ${r.date}</span>
+            <div class="hi-name">${escapeHtml(r.name)}</div>
+            <div class="hi-meta">${r.date} · ${r.difficulty.toUpperCase()} · ${r.rank}${r.negative ? ' · ⚠️ Neg' : ''}</div>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <span class="difficulty-badge badge-${r.difficulty === 'mixed' ? 'easy' : r.difficulty}">${r.difficulty.toUpperCase()}</span>
-            <span class="rank-badge rank-${r.rank.toLowerCase()}">${r.rank}</span>
-            <strong>${r.score.toFixed(2)}/${r.total}</strong>
-            <span class="text-muted">(${r.percentage}%)</span>
-            ${r.negative ? '<span style="color:var(--warning);font-size:12px;">⚠️ Neg</span>' : ''}
-          </div>
+          <div class="hi-score">${r.score.toFixed(2)}/${r.total}</div>
         </div>
-      `).join("");
-    wrap.innerHTML = rows;
+      `).join("")
+    }</div>`;
   }
 
   /* ---------- ANALYSIS SCREEN ---------- */
@@ -382,12 +370,15 @@ const App = (() => {
     const wrap = $("analysis-content");
     if (!wrap) return;
     if (!state.history.length) {
-      wrap.innerHTML = `<p class="text-muted text-center mt-8">📈 No data yet. Complete at least one quiz to see analysis!</p>`;
+      wrap.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📈</div>
+          <p>No data yet. Complete at least one quiz to see analysis!</p>
+        </div>`;
       return;
     }
 
-    let totalCorrect = 0, totalWrong = 0, totalSkipped = 0;
-    let totalScore = 0, totalPossible = 0;
+    let totalCorrect = 0, totalWrong = 0, totalSkipped = 0, totalScore = 0;
     const rankCounts = { Beginner: 0, Intermediate: 0, Advanced: 0, Expert: 0 };
 
     state.history.forEach((r) => {
@@ -395,7 +386,6 @@ const App = (() => {
       totalWrong += r.wrong;
       totalSkipped += r.skipped;
       totalScore += r.score;
-      totalPossible += r.total;
       if (rankCounts[r.rank] !== undefined) rankCounts[r.rank]++;
     });
 
@@ -418,9 +408,19 @@ const App = (() => {
 
       <div class="divider"></div>
       <p class="card-title">Answer Breakdown</p>
-      ${barRow("✅ Correct", totalCorrect, pct(totalCorrect), "var(--success)")}
-      ${barRow("❌ Wrong", totalWrong, pct(totalWrong), "var(--danger)")}
-      ${barRow("⏭️ Skipped", totalSkipped, pct(totalSkipped), "var(--warning)")}
+
+      <div class="analysis-bar-wrap">
+        <div class="analysis-label"><span>✅ Correct</span><span>${totalCorrect} (${pct(totalCorrect)}%)</span></div>
+        <div class="analysis-bar"><div class="analysis-bar-fill fill-correct" style="width:${pct(totalCorrect)}%"></div></div>
+      </div>
+      <div class="analysis-bar-wrap">
+        <div class="analysis-label"><span>❌ Wrong</span><span>${totalWrong} (${pct(totalWrong)}%)</span></div>
+        <div class="analysis-bar"><div class="analysis-bar-fill fill-wrong" style="width:${pct(totalWrong)}%"></div></div>
+      </div>
+      <div class="analysis-bar-wrap">
+        <div class="analysis-label"><span>⏭️ Skipped</span><span>${totalSkipped} (${pct(totalSkipped)}%)</span></div>
+        <div class="analysis-bar"><div class="analysis-bar-fill fill-skipped" style="width:${pct(totalSkipped)}%"></div></div>
+      </div>
 
       <div class="divider"></div>
       <p class="card-title">Rank Distribution</p>
@@ -436,19 +436,6 @@ const App = (() => {
       <div class="divider"></div>
       <p class="card-title">Best Rank Achieved</p>
       <div class="text-center"><span class="rank-badge rank-${bestRank.toLowerCase()}" style="font-size:16px;padding:8px 16px;">${bestRank}</span></div>
-    `;
-  }
-
-  function barRow(label, count, pct, color) {
-    return `
-      <div style="margin:10px 0;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-          <span>${label}</span><span class="text-muted">${count} (${pct}%)</span>
-        </div>
-        <div class="progress-bar-wrap" style="height:8px;">
-          <div class="progress-bar-fill" style="width:${pct}%;background:${color};"></div>
-        </div>
-      </div>
     `;
   }
 
