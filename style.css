@@ -1,27 +1,25 @@
 /* ============================================
    QUIZ SYSTEM - STYLESHEET (style.css)
-   All visual styling lives here.
-   Colors, fonts, layout, animations.
    ============================================ */
 
 /* --- Google Fonts Import --- */
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
-/* --- CSS Variables (easy to change theme) --- */
+/* --- CSS Variables --- */
 :root {
-  --bg-dark:       #0a0e1a;      /* main background */
-  --bg-card:       #111827;      /* card/panel background */
-  --bg-card-hover: #1a2235;      /* card hover state */
-  --border:        #1f2d45;      /* subtle borders */
-  --accent:        #00d4ff;      /* cyan accent */
+  --bg-dark:       #0a0e1a;
+  --bg-card:       #111827;
+  --bg-card-hover: #1a2235;
+  --border:        #1f2d45;
+  --accent:        #00d4ff;
   --accent-glow:   rgba(0,212,255,0.15);
-  --accent2:       #7c3aed;      /* purple secondary */
-  --success:       #10b981;      /* correct answer green */
-  --danger:        #ef4444;      /* wrong answer red */
-  --warning:       #f59e0b;      /* warning yellow */
-  --text-main:     #e2e8f0;      /* main text */
-  --text-muted:    #64748b;      /* muted/secondary text */
-  --text-dim:      #334155;      /* very dim text */
+  --accent2:       #7c3aed;
+  --success:       #10b981;
+  --danger:        #ef4444;
+  --warning:       #f59e0b;
+  --text-main:     #e2e8f0;
+  --text-muted:    #64748b;
+  --text-dim:      #334155;
   --font-mono:     'Space Mono', monospace;
   --font-body:     'DM Sans', sans-serif;
   --radius:        12px;
@@ -42,7 +40,6 @@ body {
   color: var(--text-main);
   font-family: var(--font-body);
   min-height: 100vh;
-  /* subtle grid pattern in background */
   background-image:
     linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
@@ -82,7 +79,6 @@ body {
   line-height: 1.1;
 }
 
-/* glowing accent text */
 .app-title span {
   color: var(--accent);
   text-shadow: 0 0 20px rgba(0,212,255,0.5);
@@ -96,16 +92,14 @@ body {
 
 /* ============================================
    SCREEN MANAGEMENT
-   Each "screen" is a section of the app.
-   Only one is visible at a time.
    ============================================ */
 .screen {
-  display: none;          /* hidden by default */
+  display: none;
   animation: fadeIn 0.3s ease;
 }
 
 .screen.active {
-  display: block;         /* shown when active class is added */
+  display: block;
 }
 
 @keyframes fadeIn {
@@ -114,7 +108,7 @@ body {
 }
 
 /* ============================================
-   CARDS (generic container)
+   CARDS
    ============================================ */
 .card {
   background: var(--bg-card);
@@ -177,23 +171,12 @@ body {
   color: var(--accent);
 }
 
-.btn-danger {
-  background: transparent;
-  color: var(--danger);
-  border: 1px solid var(--danger);
-}
-
-.btn-danger:hover {
-  background: rgba(239,68,68,0.1);
-}
-
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none !important;
 }
 
-/* Button group for side-by-side buttons */
 .btn-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -209,7 +192,6 @@ body {
   gap: 12px;
 }
 
-/* Each menu option is a clickable card */
 .menu-item {
   display: flex;
   align-items: center;
@@ -331,7 +313,6 @@ body {
 .toggle-info h4 { font-size: 15px; font-weight: 500; }
 .toggle-info p  { font-size: 12px; color: var(--text-muted); }
 
-/* Toggle switch styling */
 .toggle-switch {
   position: relative;
   width: 48px;
@@ -361,8 +342,6 @@ body {
 /* ============================================
    QUIZ SCREEN
    ============================================ */
-
-/* Top info bar during quiz */
 .quiz-topbar {
   display: flex;
   align-items: center;
@@ -378,7 +357,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Timer display */
 .timer-display {
   font-family: var(--font-mono);
   font-size: 22px;
@@ -393,7 +371,7 @@ body {
   text-align: center;
 }
 
-/* Timer turns red when time is running out */
+/* Timer turns red and pulses when time is running out */
 .timer-display.urgent {
   color: var(--danger);
   background: rgba(239,68,68,0.1);
@@ -406,7 +384,6 @@ body {
   to   { transform: scale(1.05); }
 }
 
-/* Score display in top bar */
 .score-display {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -414,7 +391,6 @@ body {
 }
 .score-display span { color: var(--success); font-weight: 700; }
 
-/* Progress bar */
 .progress-bar-wrap {
   height: 4px;
   background: var(--border);
@@ -430,7 +406,6 @@ body {
   transition: width 0.5s ease;
 }
 
-/* Difficulty badge */
 .difficulty-badge {
   display: inline-block;
   padding: 3px 10px;
@@ -446,18 +421,15 @@ body {
 .badge-medium { background: rgba(245,158,11,0.15);  color: var(--warning); }
 .badge-hard   { background: rgba(239,68,68,0.15);   color: var(--danger); }
 
-/* Question text */
 .question-text {
   font-size: 18px;
   font-weight: 500;
   line-height: 1.6;
   margin-bottom: 24px;
   color: var(--text-main);
-  /* for code snippets in questions */
   white-space: pre-line;
 }
 
-/* Answer options (A B C D buttons) */
 .options-grid {
   display: grid;
   gap: 10px;
@@ -486,7 +458,6 @@ body {
   transform: translateX(4px);
 }
 
-/* Letter label (A, B, C, D) */
 .option-label {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
@@ -499,7 +470,6 @@ body {
   transition: var(--transition);
 }
 
-/* Correct answer styling (shown after answering) */
 .option-btn.correct {
   border-color: var(--success);
   background: rgba(16,185,129,0.1);
@@ -509,7 +479,6 @@ body {
   color: white;
 }
 
-/* Wrong answer styling */
 .option-btn.wrong {
   border-color: var(--danger);
   background: rgba(239,68,68,0.1);
@@ -521,7 +490,6 @@ body {
 
 .option-btn:disabled { cursor: default; }
 
-/* Feedback message after answering */
 .feedback-box {
   padding: 14px 18px;
   border-radius: var(--radius);
@@ -575,7 +543,6 @@ body {
   font-size: 15px;
 }
 
-/* Big score circle */
 .score-circle-wrap {
   display: flex;
   justify-content: center;
@@ -606,7 +573,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Stats row (correct / wrong / skipped) */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -640,7 +606,6 @@ body {
 .stat-box.wrong   .stat-val { color: var(--danger); }
 .stat-box.skipped .stat-val { color: var(--warning); }
 
-/* Performance rank display */
 .rank-display {
   text-align: center;
   padding: 20px;
@@ -751,15 +716,12 @@ body {
 /* ============================================
    UTILITY / HELPERS
    ============================================ */
-.section-gap { margin-top: 24px; }
 .text-center { text-align: center; }
 .text-muted  { color: var(--text-muted); font-size: 13px; }
 .mt-8  { margin-top: 8px; }
 .mt-12 { margin-top: 12px; }
-.mt-16 { margin-top: 16px; }
 .mt-20 { margin-top: 20px; }
 
-/* Divider line */
 .divider {
   height: 1px;
   background: var(--border);
@@ -777,17 +739,14 @@ body {
   border-radius: 8px;
   font-size: 13px;
   margin-top: 8px;
-  display: none; /* shown via JS */
+  display: none;
 }
 
-.error-msg.visible { display: block; animation: fadeIn 0.2s ease; }
-
 /* ============================================
-   RESPONSIVE (mobile friendly)
+   RESPONSIVE
    ============================================ */
 @media (max-width: 480px) {
   .difficulty-grid { grid-template-columns: repeat(2, 1fr); }
-  .stats-row       { grid-template-columns: repeat(3, 1fr); }
   .btn-group       { grid-template-columns: 1fr; }
   .quiz-topbar     { flex-direction: column; align-items: flex-start; }
   .card            { padding: 20px; }
